@@ -4,5 +4,5 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: '/feature-visualizer/',
+  base: '/feature-visualizer/', // 25.11 @K
 })

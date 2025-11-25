@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feature Visualizer Demo</title>
+
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script> tailwind.config = { theme: { extend: {} } } </script>
+
+    <!-- Fallback CSS -->
+    <style>
+      .grid-12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+      .col-sidebar{grid-column:span 12/span 12}.col-main{grid-column:span 12/span 12}
+      @media (min-width:1024px){.col-sidebar{grid-column:span 3/span 3}.col-main{grid-column:span 9/span 9}}
+      .container{max-width:1120px;margin:0 auto}
+      .card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px}
+      .row{display:flex;align-items:center;gap:8px}
+      .btn{padding:8px 12px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;cursor:pointer}
+      .btn:hover{background:#f8fafc}
+      .btn-primary{background:#0369a1;color:#fff;border-color:#0369a1}
+      .btn-primary:hover{background:#075985}
+      .btn-block{width:100%}
+      .btn-ghost{background:#eef2f6;border-color:#e5e7eb}
+      .btn-ghost:hover{background:#e9eef6}
+      .btn-link{background:transparent;border-color:transparent;color:#0b6ea9;padding-left:0}
+      .btn-link:hover{background:transparent;text-decoration:underline}
+      .pill{border:1px solid #e5e7eb;border-radius:8px;padding:2px 8px;font-size:12px;background:#fff}
+      .tag{font-size:12px;background:#f1f5f9;padding:2px 8px;border-radius:8px;border:1px solid #e5e7eb}
+      .popup{position:fixed;right:24px;bottom:24px;max-width:380px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.12)}
+      .muted{color:#64748b;font-size:12px}
+      .border-left-feature{border-left:4px solid #0ea5e9}.border-left-note{border-left:4px solid #cbd5e1}
+
+      /* Чипы */
+      .chips-row{display:flex;flex-wrap:wrap;gap:10px}
+      .chip{background:#0b6ea9;color:#fff;border-radius:10px;padding:10px 14px;box-shadow:inset 0 -2px rgba(255,255,255,.15);cursor:pointer;border:1px solid #075985}
+      .chip:hover{background:#0a6297}
+      .chip .sub{display:block;font-size:11px;opacity:.85;margin-top:2px}
+      .chip .title{font-weight:600;font-size:13px;letter-spacing:.2px}
+
+      /* Верхние вкладки */
+      .top-tabs{display:flex;gap:28px;justify-content:center;border-bottom:1px solid #e5e7eb;background:#fff}
+      .top-tab{position:relative;padding:12px 4px;font-weight:500;color:#475569}
+      .top-tab:hover{color:#0b6ea9}
+      .top-tab.active{color:#0b6ea9}
+      .top-tab.active::after{content:"";position:absolute;left:0;right:0;bottom:-1px;margin:auto;width:44px;height:3px;border-radius:3px;background:#0b6ea9}
+
+        /* ========== HIGHLIGHT / GLOW ========== */
+  @keyframes pulse-glow {
+    0%   { box-shadow: 0 0 0 0 rgba(14,165,233,.55), 0 0 0 0 rgba(14,165,233,.35); }
+    70%  { box-shadow: 0 0 0 8px rgba(14,165,233,0), 0 0 0 16px rgba(14,165,233,0); }
+    100% { box-shadow: 0 0 0 0 rgba(14,165,233,0), 0 0 0 0 rgba(14,165,233,0); }
+  }
+  .hl-on { position: relative; outline: 2px solid #0ea5e9; outline-offset: 0; animation: pulse-glow 2s ease-out infinite; }
+  .hl-ring { position:absolute; inset:-6px; border-radius:12px; pointer-events:none; box-shadow:0 0 0 4px rgba(14,165,233,.25) }
+
+  /* ========== TOOLTIP (hover) ========== */
+  .tooltip {
+    position:absolute; z-index:100; transform:translateY(-6px);
+    background:#0b1220; color:#fff; font-size:12px; line-height:1.2;
+    padding:8px 10px; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,.25);
+    max-width:260px;
+  }
+  .tooltip::after {
+    content:""; position:absolute; left:12px; bottom:-6px;
+    width:10px; height:10px; background:#0b1220; transform:rotate(45deg);
+  }
+
+  /* ========== TOP RIGHT SWITCH ========== */
+  .switch {
+    position: relative; width: 50px; height: 26px; border-radius: 9999px;
+    background: #e5e7eb; transition: background .2s; border:1px solid #d1d5db;
+  }
+  .switch.on { background:#0ea5e9; border-color:#0ea5e9; }
+  .knob {
+    position:absolute; top:2px; left:2px; width:22px; height:22px; border-radius:9999px;
+    background:#fff; box-shadow:0 1px 2px rgba(0,0,0,.2); transition:left .2s;
+  }
+  .switch.on .knob { left:26px; }
+
+  /* ===== Modal (Advanced search) ===== */
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(15,23,42,.45); backdrop-filter: blur(2px);
+  z-index:1000; display:flex; align-items:flex-start; justify-content:center; overflow:auto;
+}
+.modal{
+  margin-top:48px; background:#fff; border-radius:14px; border:1px solid #e5e7eb;
+  width:min(1100px, 96vw); box-shadow:0 24px 60px rgba(0,0,0,.22);
+}
+.modal-header{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid #e5e7eb }
+.modal-title{ font-weight:600 }
+.modal-body{ padding:16px }
+.modal-footer{ padding:12px 16px; border-top:1px solid #e5e7eb; display:flex; gap:10px; justify-content:space-between; flex-wrap:wrap }
+.as-grid{ display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:14px 22px }
+.as-field{ border:1px solid #e5e7eb; border-radius:10px; padding:10px 12px; background:#fff }
+.as-label{ font-size:12px; color:#475569; margin-bottom:6px; display:block }
+.as-input{ width:100%; border:none; outline:none; font-size:14px }
+.as-switch{ display:flex; align-items:center; gap:8px; font-size:14px }
+.tagbox{ display:flex; flex-wrap:wrap; gap:6px }
+.tagchip{ background:#eef2f6; border:1px solid #e5e7eb; border-radius:9999px; padding:4px 8px; font-size:12px }
+.tagchip button{ margin-left:6px }
+
+    </style>
+  </head>
+  <body class="bg-gray-50 text-slate-800">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

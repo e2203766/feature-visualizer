@@ -1,40 +1,306 @@
-/* ==== LAYOUT / POPUP FIXES FOR NEW FEATURES ==== */
+/* ===================================================================
+   GLOBAL LAYOUT / POPUP FIXES
+   =================================================================== */
 
 /* карточки не должны обрезать красные бейджи и поповеры */
-.card{
+.card {
   overflow: visible;
 }
 
 /* чипы — перенос строк */
-.chips-row{
-  display:flex; flex-wrap:wrap; gap:12px;
+.chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 /* красный кружок-индикатор */
-.new-dot{
-  position:absolute;
-  top:-6px; right:-6px;
-  width:18px; height:18px; border-radius:9999px;
-  background:#ef4444; color:#fff;
-  font-weight:700; font-size:12px; line-height:18px; text-align:center;
-  box-shadow:0 2px 6px rgba(0,0,0,.25);
-  z-index:30;
+.new-dot {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: #ef4444;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 30;
 }
 
-/* поповер, который открывается по клику на кружок */
-.popover{
-  position:absolute; top:calc(100% + 8px); right:0;
-  z-index:40;
-  background:#fff; border:1px solid rgba(2,6,23,.08);
-  border-radius:12px; padding:12px 14px;
-  box-shadow:0 10px 30px rgba(2,6,23,.12);
-  width:300px;
+/* поповер */
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 40;
+  background: var(--nord-card);
+  border: 1px solid var(--nord-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.12);
+  width: 300px;
 }
-.popover-title{ font-weight:600; margin-bottom:6px; }
-.popover-body{ font-size:14px; color:#334155; }
-.popover-actions{ margin-top:10px; display:flex; justify-content:flex-end; gap:8px; }
 
-/* сегментированный переключатель Glow/Badges */
-.seg{ display:inline-flex; border:1px solid rgba(2,6,23,.1); border-radius:10px; overflow:hidden; }
-.seg-btn{ padding:6px 10px; font-size:14px; background:#fff; }
-.seg-btn.active{ background:#0ea5e9; color:#fff; }
+.popover-title {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.popover-body {
+  font-size: 14px;
+  color: var(--nord-text-muted);
+}
+
+.popover-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* переключатель Glow / Badges */
+.seg {
+  display: inline-flex;
+  border: 1px solid rgba(2, 6, 23, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.seg-btn {
+  padding: 6px 10px;
+  font-size: 14px;
+  background: #fff;
+}
+
+.seg-btn.active {
+  background: #0ea5e9;
+  color: #fff;
+}
+
+/* ===================================================================
+   VIDEO + MODALS
+   =================================================================== */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+}
+
+.modal-backdrop-inner {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.modal {
+  background: var(--nord-card);
+  border-radius: 18px;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+  overflow: hidden;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 16px 24px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.modal-body {
+  padding: 8px 24px 20px;
+}
+
+.modal-footer {
+  padding: 12px 24px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* видео интерактивное */
+video {
+  pointer-events: auto !important;
+  display: block;
+  max-width: 100%;
+}
+
+/* ===================================================================
+   NORDIC DESIGN – LIGHT THEME (DEFAULT)
+   =================================================================== */
+
+:root {
+  --nord-bg: #d7e4f5; /* нордический голубой фон */
+  --nord-card: #ffffff;
+  --nord-border: rgba(15, 23, 42, 0.08);
+
+  --nord-blue: #2b7bbf;
+  --nord-blue-soft: #d6e8f7;
+
+  --nord-text-main: #0f172a;
+  --nord-text-muted: #64748b;
+
+  --nord-radius: 14px;
+}
+
+html,
+body,
+#root,
+.min-h-screen {
+  background: var(--nord-bg);
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+    "Segoe UI", sans-serif;
+  color: var(--nord-text-main);
+}
+
+/* карточки */
+.card {
+  background: var(--nord-card);
+  border: 1px solid var(--nord-border);
+  border-radius: var(--nord-radius);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+/* вкладки */
+.top-tabs {
+  border-bottom: 1px solid var(--nord-border);
+}
+
+.top-tab {
+  color: var(--nord-text-muted);
+}
+
+.top-tab.active {
+  color: var(--nord-blue);
+  border-color: var(--nord-blue);
+}
+
+/* кнопки */
+.btn {
+  border-radius: 10px;
+  color: var(--nord-text-main);
+}
+
+.btn-primary {
+  background: var(--nord-blue);
+  color: #fff;
+}
+
+/* инпуты */
+input,
+select {
+  border-radius: 10px;
+  border: 1px solid var(--nord-border);
+  color: var(--nord-text-main);
+}
+
+/* теги/плашки */
+.tag,
+.pill {
+  border-radius: 8px;
+}
+
+/* ===================================================================
+   DARK THEME
+   =================================================================== */
+
+body.theme-dark {
+  --nord-bg: #0b1120;         /* по-настоящему тёмный, не голубой */
+  --nord-card: #111827;       /* тёмная карта */
+  --nord-border: rgba(148, 163, 184, 0.25);
+
+  --nord-blue: #38bdf8;
+  --nord-blue-soft: rgba(56, 189, 248, 0.12);
+
+  --nord-text-main: #e5e7eb;
+  --nord-text-muted: #9ca3af;
+
+  background: var(--nord-bg);
+  color: var(--nord-text-main);
+}
+
+/* карточки */
+body.theme-dark .card {
+  background: var(--nord-card);
+  border-color: var(--nord-border);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* текст */
+body.theme-dark .muted,
+body.theme-dark .text-slate-600,
+body.theme-dark .text-slate-500 {
+  color: var(--nord-text-muted);
+}
+
+/* кнопки */
+body.theme-dark .btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: var(--nord-text-main);
+}
+
+body.theme-dark .btn:hover {
+  background: #334155;
+}
+
+body.theme-dark .btn-primary {
+  background: #38bdf8;
+  color: #0b1120;
+}
+
+/* вкладки */
+body.theme-dark .top-tab {
+  color: var(--nord-text-muted);
+}
+
+body.theme-dark .top-tab.active {
+  color: var(--nord-text-main);
+  border-color: var(--nord-blue);
+}
+
+/* инпуты */
+body.theme-dark input,
+body.theme-dark select {
+  background: #111827;
+  border-color: #334155;
+  color: var(--nord-text-main);
+}
+
+/* поповеры, модалки, чипы */
+body.theme-dark .popover,
+body.theme-dark .modal {
+  background: var(--nord-card);
+  border-color: var(--nord-border);
+}
+
+body.theme-dark .tag.NEW,
+body.theme-dark .tag.BETA,
+body.theme-dark .tag.TIP {
+  background: #1e293b;
+  color: #e5e7eb;
+}

@@ -1,8 +1,9 @@
 // src/components/modals/BulkUploadModal.tsx
-import React, { useMemo, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useState } from "react";
+import { AnimatePresence } from "framer-motion"; // motion здесь не используется
 import type { Part } from "../../types";
 import { Backdrop, MotionModal } from "../ui/ModalPrimitives";
+
 
 type Props = {
   open: boolean;

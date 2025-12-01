@@ -1,6 +1,7 @@
 // src/App.tsx
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+
 
 import { DUMMY_NEWS } from "./data/news";
 import { CHIPS } from "./data/chips";

@@ -1,5 +1,5 @@
 // src/components/concepts/ConceptGallery.tsx
-import React from "react";
+//import React from "react";
 import { motion } from "framer-motion";
 import type { ConceptDemo } from "../../types";
 

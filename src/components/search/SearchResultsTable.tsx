@@ -1,5 +1,5 @@
 // src/components/search/SearchResultsTable.tsx
-import React from "react";
+//import React from "react";
 import type { Part } from "../../types";
 
 type Props = {

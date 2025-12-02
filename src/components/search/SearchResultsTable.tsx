@@ -1,6 +1,8 @@
 // src/components/search/SearchResultsTable.tsx
-//import React from "react";
+// import React from "react";
 import type { Part } from "../../types";
+import { Indicator } from "../ui/Indicator";
+import type { HighlightStyle } from "../ui/Indicator";
 
 type Props = {
   parts: Part[];
@@ -9,6 +11,15 @@ type Props = {
   selectedIds: string[];
   onToggleSelect: (id: string) => void;
   onOpenDetails: (p: Part) => void;
+
+  // NEW: для подсветки 3D-кнопки
+  highlightOn: boolean;
+  hlStyle: HighlightStyle;
+  dismissed: Record<string, boolean>;
+  mark: (id: string) => void;
+
+  // NEW: открыть 3D / видео превью
+  onOpenPreview: (p: Part) => void;
 };
 
 export function SearchResultsTable({
@@ -18,6 +29,11 @@ export function SearchResultsTable({
   selectedIds,
   onToggleSelect,
   onOpenDetails,
+  highlightOn,
+  hlStyle,
+  dismissed,
+  mark,
+  onOpenPreview,
 }: Props) {
   const trimmed = query.trim();
 
@@ -52,6 +68,8 @@ export function SearchResultsTable({
             <th className="py-1 pr-3">Standard</th>
             <th className="py-1 pr-3">Purch. cat</th>
             <th className="py-1 pr-3">Status</th>
+            {/* NEW: колонка 3D / photo */}
+            <th className="py-1 pr-3 w-[80px]">3D / photo</th>
             <th className="py-1 pr-3 w-[80px]">Details</th>
           </tr>
         </thead>
@@ -101,6 +119,30 @@ export function SearchResultsTable({
                     {p.status}
                   </span>
                 </td>
+
+                {/* NEW: 3D / photo кнопка с хайлайтом */}
+                <td
+                  className="py-1 pr-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (p.has3d) onOpenPreview(p);
+                  }}
+                >
+                  {p.has3d && (
+                    <Indicator
+                      id="preview-3d"
+                      show={highlightOn}
+                      style={hlStyle}
+                      dismissed={dismissed}
+                      onDismiss={mark}
+                    >
+                      <button className="btn btn-ghost text-xs px-2 py-1">
+                        3D
+                      </button>
+                    </Indicator>
+                  )}
+                </td>
+
                 <td
                   className="py-1 pr-3"
                   onClick={(e) => {
@@ -123,5 +165,3 @@ export function SearchResultsTable({
     </div>
   );
 }
-
-

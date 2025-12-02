@@ -1,4 +1,6 @@
 import type { Part } from "../types";
+import cdq2Image from "../assets/demo2.png";
+import cdq2Video from "../assets/demo2.mp4";
 
 export const PARTS: Part[] = [
     {
@@ -276,5 +278,22 @@ export const PARTS: Part[] = [
     plant: "Vaasa",
     supplier: "MarkTech Oy",
     priceEUR: 29.0,
+  },
+   {
+    id: "CDQ2A20-15DZ",
+  name: "C(D)Q2, Compact Cylinder, Double Acting, Single Rod w/Auto Switch Mounting Groove",
+  family: "CDQ2",
+  engine: "CDQ2",
+  material: "Aluminium body",
+  standard: null,
+  purchasingCategory: "PNEU",
+  status: "Approved",
+  plant: "Y12",
+  supplier: "SMC (demo)",
+  priceEUR: 120,
+  recommendedIds: ["PINS900001", "PINS900002"],
+  imageUrl: cdq2Image,      //  теперь это URL от Vite
+  previewVideoUrl: cdq2Video,
+  has3d: true,
   },
 ];

@@ -1,5 +1,5 @@
 // src/components/concepts/ConceptGallery.tsx
-//import React from "react";
+// import React from "react";
 import { motion } from "framer-motion";
 import type { ConceptDemo } from "../../types";
 
@@ -77,6 +77,13 @@ const CONCEPTS: Concept[] = [
     tag: "SEE",
     demo: "howto",
   },
+  {
+    id: "c10",
+    title: "3D / Photo viewer for parts",
+    desc: "Open inline 3D / video preview directly from search results.",
+    tag: "SEE",
+    demo: "viewer3d",
+  },
 ];
 
 const tagColors: Record<ConceptTag, string> = {
@@ -131,3 +138,4 @@ export function ConceptGallery({ onRun }: Props) {
     </section>
   );
 }
+

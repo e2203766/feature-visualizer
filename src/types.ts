@@ -16,6 +16,9 @@ export type Part = {
   priceEUR: number;
   /** Demo: frequently bought together / accessories */
   recommendedIds?: string[];
+  imageUrl?: string;        // фото / рендер
+  previewVideoUrl?: string; // специфичное видео для этой детали (например demo2.mp4)
+  has3d?: boolean;          // есть ли 3D / видео превью
 };
 
 export type AdvState = {
@@ -58,7 +61,8 @@ export type ConceptDemo =
   | "digest"
   | "compare"
   | "bulk"   // NEW: bulk upload & export
-  | "howto"; // NEW: how to test all features
+  | "howto" // NEW: how to test all features
+  | "viewer3d"; // NEW: 3D / Photo viewer concept
 
 export type Concept = {
   id: string;

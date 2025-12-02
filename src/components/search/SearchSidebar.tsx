@@ -84,22 +84,25 @@ export const SearchSidebar: React.FC<Props> = (props) => {
               </Highlight>
             ) : (
               <Indicator
-                id="mic"
-                title="New: Voice search"
-                body="Click the mic and say an item name or ID."
-                onDismiss={mark}
-                show={highlightOn && !dismissed["mic"]}
-              >
-                <motion.button
-                  className="btn"
-                  title="Voice search"
-                  onClick={onVoiceClick}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  🎤
-                </motion.button>
-              </Indicator>
+  id="mic"
+  title="New: Voice search"
+  body="Click the mic and say an item name or ID."
+  onDismiss={mark}
+  show={highlightOn}          // глобальный флаг
+  style={hlStyle}             // Glow / Badges из топбара
+  dismissed={dismissed}       // объект с уже скрытыми индикаторами
+>
+  <motion.button
+    className="btn"
+    whileHover={{ y: -1, scale: 1.03 }}
+    whileTap={{ scale: 0.97 }}
+    type="button"
+    onClick={onVoiceClick}
+  >
+    🎤
+  </motion.button>
+</Indicator>
+
             )}
           </div>
 

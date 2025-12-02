@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
-
 import { DUMMY_NEWS } from "./data/news";
 import { CHIPS } from "./data/chips";
 import { PARTS } from "./data/parts";
@@ -29,13 +28,16 @@ import { BulkUploadModal } from "./components/modals/BulkUploadModal";
 import { HowToTestModal } from "./components/modals/HowToTestModal";
 import { CompareTable } from "./components/compare/CompareTable";
 
+import { Indicator } from "./components/ui/Indicator";
 import type { HighlightStyle } from "./components/ui/Indicator";
+import { PartPreviewModal } from "./components/modals/PartPreviewModal";
 
 type Tab = "search" | "compare" | "recent" | "concepts";
 
 function startVoice(setter: (t: string) => void) {
   const SR: any =
-    (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    (window as any).SpeechRecognition ||
+    (window as any).webkitSpeechRecognition;
   if (!SR) {
     alert("Voice recognition not supported in this browser");
     return;
@@ -67,6 +69,9 @@ export default function App() {
 
   const [theme, setTheme] = useState<"light" | "dark">("light");
 
+  
+
+
   // навешиваем / снимаем класс на <body> при переключении темы
   useEffect(() => {
     document.body.classList.toggle("theme-dark", theme === "dark");
@@ -89,6 +94,10 @@ export default function App() {
   const [activePart, setActivePart] = useState<Part | null>(null);
 
   const newsRef = useRef<HTMLDivElement | null>(null);
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewPart, setPreviewPart] = useState<Part | null>(null);
+
 
   // hotkey for palette
   useEffect(() => {
@@ -242,6 +251,16 @@ export default function App() {
       setShowHowTo(true);
     }
     if (demo === "highlight") setHighlightOn(true);
+        if (demo === "viewer3d") {
+      const p = PARTS.find((x) => x.id === "CDQ2A20-15DZ");
+      if (p) {
+        setPreviewPart(p);
+        setPreviewOpen(true);
+        setQ(p.id);
+        setTab("search");
+      }
+    }
+
   }
 
   const handleReadDeepLink = () => {
@@ -291,6 +310,11 @@ export default function App() {
     pushToHistory(p);
   };
 
+  const handleOpenPreview = (p: Part) => {
+  setPreviewPart(p);
+  setPreviewOpen(true);
+  };
+
   const handleExportCsv = () => {
     if (!filteredParts.length) {
       alert("Nothing to export – try adjusting filters first.");
@@ -326,7 +350,9 @@ export default function App() {
     ]);
 
     const csv = [header, ...rows]
-      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
+      .map((r) =>
+        r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
+      )
       .join("\r\n");
 
     const blob = new Blob([csv], { type: "text/csv" });
@@ -350,6 +376,8 @@ export default function App() {
         onToggleTheme={() =>
           setTheme((prev) => (prev === "light" ? "dark" : "light"))
         }
+        dismissed={dismissed}
+        mark={mark}
       />
 
       <TabsNav tab={tab} setTab={setTab} />
@@ -411,19 +439,28 @@ export default function App() {
             </div>
           </section>
 
-          {/* Recently viewed */}
-          <RecentlyViewed
-            items={history}
-            onSelect={(p) => {
-              setQ(p.id);
-              setActivePart(p);
-            }}
-          />
+          {/* Recently viewed (highlighted) */}
+          <Indicator
+            id="recently-viewed"
+            show={highlightOn}
+            style={hlStyle}
+            dismissed={dismissed}
+            onDismiss={mark}
+          >
+            <RecentlyViewed
+              items={history}
+              onSelect={(p) => {
+                setQ(p.id);
+                setActivePart(p);
+              }}
+            />
+          </Indicator>
 
           <div className="mt-auto card">
             <button
               className="btn btn-primary btn-block"
               onClick={() => alert("Feedback form (demo)")}
+
             >
               Feedback
             </button>
@@ -431,12 +468,14 @@ export default function App() {
               <button
                 className="btn btn-ghost"
                 onClick={() => alert("Help+ (demo)")}
+
               >
                 Help+
               </button>
               <button
                 className="btn"
                 onClick={() => alert("Privacy notice (demo)")}
+
               >
                 Privacy notice
               </button>
@@ -506,83 +545,121 @@ export default function App() {
                   </div>
                 </motion.section>
 
-                <section ref={newsRef} className="card">
+                {/* Smart search + results + accessories + news */}
+                <section className="card">
+                  {/* --- Smart search (demo results) наверху --- */}
                   <div className="flex items-center justify-between pb-2">
-                    <div className="text-base font-semibold">Latest news</div>
-                    <div className="muted">Demo data</div>
-                  </div>
-                  <NewsList items={filteredNews} q={q} />
+                    <div className="text-base font-semibold">
+                      Smart search (demo results)
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>
+                        Type ID, name, material, standard or use the chips /
+                        mic. Use Advanced search for multi-criteria filtering.
+                      </span>
 
-                  <div className="mt-4 pt-3 border-t">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="text-base font-semibold">
-                        Smart search (demo results)
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500">
-                        <span>
-                          Type ID, name, material, standard or use the chips /
-                          mic. Use Advanced search for multi-criteria filtering.
-                        </span>
+                      {/* Bulk upload button with highlight */}
+                      <Indicator
+                        id="bulk-upload-btn"
+                        show={highlightOn}
+                        style={hlStyle}
+                        dismissed={dismissed}
+                        onDismiss={mark}
+                      >
                         <button
                           className="btn btn-ghost text-xs px-2 py-1"
                           onClick={() => setShowBulk(true)}
                         >
                           Bulk upload (paste IDs)
                         </button>
+                      </Indicator>
+
+                      {/* Export button with highlight */}
+                      <Indicator
+                        id="export-excel-btn"
+                        show={highlightOn}
+                        style={hlStyle}
+                        dismissed={dismissed}
+                        onDismiss={mark}
+                      >
                         <button
                           className="btn btn-ghost text-xs px-2 py-1"
                           onClick={handleExportCsv}
                         >
                           Export to Excel
                         </button>
-                      </div>
+                      </Indicator>
                     </div>
+                  </div>
 
-                    <ActiveFiltersBar
-                      query={q}
-                      onlyApproved={onlyApproved}
-                      includeStandards={includeStandards}
-                      advFilters={appliedAdv}
-                      onClearQuery={() => setQ("")}
-                      onClearAdv={() => setAppliedAdv(null)}
-                      onClearAll={resetSearch}
+                  <ActiveFiltersBar
+                    query={q}
+                    onlyApproved={onlyApproved}
+                    includeStandards={includeStandards}
+                    advFilters={appliedAdv}
+                    onClearQuery={() => setQ("")}
+                    onClearAdv={() => setAppliedAdv(null)}
+                    onClearAll={resetSearch}
+                  />
+
+                  <SearchResultsTable
+                    parts={filteredParts}
+                    query={q}
+                    hasFilters={hasFilters}
+                    selectedIds={selectedIds}
+                    onToggleSelect={toggleSelectForCompare}
+                    onOpenDetails={handleOpenDetails}
+                    highlightOn={highlightOn}
+                    hlStyle={hlStyle}
+                    dismissed={dismissed}
+                    mark={mark}
+                    onOpenPreview={handleOpenPreview}
                     />
 
-                    <SearchResultsTable
-                      parts={filteredParts}
-                      query={q}
-                      hasFilters={hasFilters}
-                      selectedIds={selectedIds}
-                      onToggleSelect={toggleSelectForCompare}
-                      onOpenDetails={handleOpenDetails}
-                    />
+                  {/* Accessories / Frequently bought together (highlighted) */}
+                  {activePart && activePart.recommendedIds && (
+                    <Indicator
+                      id="frequently-bought"
+                      show={highlightOn}
+                      style={hlStyle}
+                      dismissed={dismissed}
+                      onDismiss={mark}
+                    >
+                      <div className="mt-4 pt-3 border-t">
+                        <div className="text-sm font-semibold mb-2">
+                          Frequently bought together with{" "}
+                          <span className="font-mono">{activePart.id}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-sm">
+                          {activePart.recommendedIds
+                            .map((id) => PARTS.find((p) => p.id === id))
+                            .filter((p): p is Part => Boolean(p))
+                            .map((p: Part) => (
+                              <button
+                                key={p.id}
+                                className="btn btn-ghost text-xs"
+                                onClick={() => handleOpenDetails(p)}
+                              >
+                                <span className="font-mono mr-1">
+                                  {p.id}
+                                </span>
+                                {p.name}
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                    </Indicator>
+                  )}
 
-                    {/* Accessories / Frequently bought together */}
-{activePart && activePart.recommendedIds && (
-  <div className="mt-4 pt-3 border-t">
-    <div className="text-sm font-semibold mb-2">
-      Frequently bought together with{" "}
-      <span className="font-mono">{activePart.id}</span>
-    </div>
-    <div className="flex flex-wrap gap-2 text-sm">
-      {activePart.recommendedIds
-        .map((id) => PARTS.find((p) => p.id === id))
-        // type-guard: оставляем только реальные Part
-        .filter((p): p is Part => Boolean(p))
-        .map((p: Part) => (
-          <button
-            key={p.id}
-            className="btn btn-ghost text-xs"
-            onClick={() => handleOpenDetails(p)}
-          >
-            <span className="font-mono mr-1">{p.id}</span>
-            {p.name}
-          </button>
-        ))}
-    </div>
-  </div>
-)}
-
+                  {/* --- Latest news ниже результатов --- */}
+                  <div ref={newsRef} className="mt-6 pt-4 border-t">
+                    <div className="flex items-center justify-between pb-2">
+                      <div className="text-base font-semibold">
+                        Latest news
+                      </div>
+                      <div className="muted">Demo data</div>
+                    </div>
+                    <NewsList items={filteredNews} q={q} />
                   </div>
                 </section>
               </motion.div>
@@ -669,17 +746,18 @@ export default function App() {
         </div>
       )}
 
-      <VideoModal open={showVideo} onClose={() => setShowVideo(false)} autoPlay />
+      <VideoModal
+        open={showVideo}
+        onClose={() => setShowVideo(false)}
+        autoPlay
+      />
       <GuidedTour open={showTour} onClose={() => setShowTour(false)} />
       <BulkUploadModal
         open={showBulk}
         onClose={() => setShowBulk(false)}
         parts={PARTS}
       />
-      <HowToTestModal
-        open={showHowTo}
-        onClose={() => setShowHowTo(false)}
-      />
+      <HowToTestModal open={showHowTo} onClose={() => setShowHowTo(false)} />
       <CommandPalette
         open={showPalette}
         onClose={() => setShowPalette(false)}
@@ -706,6 +784,12 @@ export default function App() {
           }
         }}
       />
+      <PartPreviewModal
+       open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        part={previewPart}
+        />
+
       <DigestModal
         open={showDigest}
         onClose={() => setShowDigest(false)}

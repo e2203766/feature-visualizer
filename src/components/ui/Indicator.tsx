@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// src/components/ui/Indicator.tsx
+import { useState, type ReactNode } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { fadeScale } from "../../utils/animations";
 
@@ -6,37 +7,66 @@ export type HighlightStyle = "glow" | "badge";
 
 type Props = {
   id: string;
-  title: string;
-  body: string;
-  children: React.ReactNode;
-  onDismiss: (id: string) => void;
+  children: ReactNode;
+  /** Глобальный флаг “Highlight new” */
   show: boolean;
+  /** Glow / Badges переключатель в топбаре */
+  style: HighlightStyle;
+  /** Какие индикаторы уже скрыты пользователем */
+  dismissed: Record<string, boolean>;
+  /** Пометить индикатор как скрытый */
+  onDismiss: (id: string) => void;
+  /** Дополнительный класс-обёртки */
   className?: string;
+  /** Заголовок поповера (опционально) */
+  title?: string;
+  /** Текст поповера (опционально) */
+  body?: string;
 };
 
-export const Indicator: React.FC<Props> = ({
+export const Indicator = ({
   id,
+  children,
+  show,
+  style,
+  dismissed,
+  onDismiss,
+  className = "",
   title,
   body,
-  children,
-  onDismiss,
-  show,
-  className = "",
-}) => {
+}: Props) => {
   const [open, setOpen] = useState(false);
 
-  if (!show) return <>{children}</>;
+  // если highlight выключен или этот индикатор уже погашен — просто рендерим детей
+  if (!show || dismissed[id]) {
+    return <>{children}</>;
+  }
+
+  const handleDismiss = () => {
+    onDismiss(id);
+    setOpen(false);
+  };
 
   return (
     <div className={`relative inline-block ${className}`}>
+      {/* контент, который подсвечиваем */}
       {children}
+
+      {/* красный кружок / бейдж NEW */}
       {!open && (
-        <button className="new-dot" onClick={() => setOpen(true)}>
-          !
+        <button
+          type="button"
+          className="new-dot"
+          onClick={() => setOpen(true)}
+          aria-label="Show what is new here"
+        >
+          {style === "badge" ? "★" : "!"}
         </button>
       )}
+
+      {/* поповер с описанием (если есть title/body) */}
       <AnimatePresence>
-        {open && (
+        {open && (title || body) && (
           <motion.div
             className="popover"
             variants={fadeScale}
@@ -44,16 +74,10 @@ export const Indicator: React.FC<Props> = ({
             animate="animate"
             exit="exit"
           >
-            <div className="popover-title">{title}</div>
-            <div className="popover-body">{body}</div>
+            {title && <div className="popover-title">{title}</div>}
+            {body && <div className="popover-body">{body}</div>}
             <div className="popover-actions">
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  onDismiss(id);
-                  setOpen(false);
-                }}
-              >
+              <button className="btn btn-primary" onClick={handleDismiss}>
                 Got it
               </button>
             </div>
